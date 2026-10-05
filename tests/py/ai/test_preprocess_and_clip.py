@@ -9,7 +9,7 @@ import numpy as np
 import pytest
 from PIL import Image
 
-from cantrack_api.ai.embeddings import ClipEmbedder, ImageError, preprocess
+from cantrack_ai.embeddings import ClipEmbedder, ImageError, preprocess
 
 MEAN = np.array([0.48145466, 0.4578275, 0.40821073])
 STD = np.array([0.26862954, 0.26130258, 0.27577711])
@@ -155,7 +155,7 @@ class TestRealModel:
         assert embedder.embed(data) == embedder.embed(data)
 
     def test_same_picture_at_another_size_is_closer_than_noise(self, embedder):
-        from cantrack_api.ai.embeddings import cosine_similarity
+        from cantrack_ai.embeddings import cosine_similarity
 
         big = embedder.embed(encode(self.gradient(512)))
         small = embedder.embed(encode(self.gradient(160)))

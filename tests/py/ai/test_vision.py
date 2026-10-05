@@ -6,7 +6,7 @@ import json
 import httpx
 import pytest
 
-from cantrack_api.ai.vision import OllamaVision, PhotoCheck
+from cantrack_ai.vision import OllamaVision, PhotoCheck
 
 IMAGE = b"\xff\xd8fake-jpeg-bytes"
 B64 = base64.b64encode(IMAGE).decode()

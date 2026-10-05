@@ -2,7 +2,7 @@ import math
 
 import pytest
 
-from cantrack_api.ai.embeddings import cosine_similarity, parse_embedding
+from cantrack_ai.embeddings import cosine_similarity, parse_embedding
 
 
 class TestCosineSimilarity:

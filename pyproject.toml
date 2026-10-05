@@ -5,14 +5,13 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "cantrack-ai"
 version = "0.1.0"
-description = "CanTrack vision and embedding helpers (cantrack_api.ai)"
+description = "CanTrack vision and embedding helpers (cantrack_ai)"
 requires-python = ">=3.11"
 dependencies = ["httpx", "numpy", "pillow"]
 
 [tool.setuptools.packages.find]
-where = ["apps/api-py/src"]
-include = ["cantrack_api.ai*"]
-namespaces = true
+where = ["src"]
+include = ["cantrack_ai*"]
 
 [tool.pytest.ini_options]
-pythonpath = ["apps/api-py/src"]
+pythonpath = ["src"]
