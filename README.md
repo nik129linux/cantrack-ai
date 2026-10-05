@@ -11,3 +11,4 @@ This repository was split out of the CanTrack monorepo, keeping only
 - [cantrack-frontend](https://github.com/nik129linux/cantrack-frontend) — web application and UI tests
 - [cantrack-db](https://github.com/nik129linux/cantrack-db) — database schema
 - [cantrack](https://github.com/nik129linux/cantrack) — monorepo with the full project
+ 
