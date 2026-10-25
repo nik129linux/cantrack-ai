@@ -31,9 +31,11 @@ IMAGE_SIZE = 224
 #: CLIP's per-channel normalisation constants, in RGB order.
 CHANNEL_MEAN = (0.48145466, 0.4578275, 0.40821073)
 CHANNEL_STD = (0.26862954, 0.26130258, 0.27577711)
-#: Refuse anything above this many pixels: 224x224 is all we keep, so decoding
-#: a 100-megapixel panorama would only cost memory.
-MAX_PIXELS = 50_000_000
+#: Refuse anything above this many pixels before decoding it. The API runs in
+#: 512 MB and keeps only 224x224, so a decompression bomb (a tiny file that
+#: declares a giant canvas) would otherwise allocate gigabytes and kill the
+#: process; 25M pixels is already far more than any real photo needs.
+MAX_IMAGE_PIXELS = 25_000_000
 
 _DOWNLOAD_TIMEOUT = 300.0
 
@@ -50,6 +52,10 @@ def preprocess(image_bytes: bytes) -> np.ndarray:
     scale the *shortest* edge to 224 keeping the aspect ratio, take the centre
     224x224 crop and normalise each channel.
 
+    The declared canvas is checked against ``MAX_IMAGE_PIXELS`` straight from
+    the header, before any pixel is decoded, so a decompression bomb costs
+    almost nothing. That check is O(1); the rest is O(pixels).
+
     Args:
         image_bytes: The raw contents of an encoded image (JPEG, PNG, ...).
 
@@ -59,19 +65,24 @@ def preprocess(image_bytes: bytes) -> np.ndarray:
 
     Raises:
         ImageError: If the bytes cannot be decoded, are empty/truncated, or
-            describe an image with more than ``MAX_PIXELS`` pixels.
+            describe an image with more than ``MAX_IMAGE_PIXELS`` pixels.
     """
     try:
         with Image.open(io.BytesIO(image_bytes)) as opened:
+            # Image.open reads only the header, so refuse an oversized canvas
+            # before exif_transpose/load/convert touches the pixels. Read the
+            # cap through the module global: a test monkeypatches it.
+            width, height = opened.size
+            if width * height > MAX_IMAGE_PIXELS:
+                raise ImageError("image is too large")
             # exif_transpose reads the pixels itself, and phones store sideways
             # pixels plus an orientation flag, so this has to come first.
             image = ImageOps.exif_transpose(opened)
-            if image.width * image.height > MAX_PIXELS:
-                raise ImageError(
-                    f"image is too large: {image.width}x{image.height} pixels"
-                )
             image.load()
             rgb = image.convert("RGB")
+    except Image.DecompressionBombError as exc:
+        # Pillow's own guard fires inside Image.open for giant canvases.
+        raise ImageError(f"image is too large: {exc}") from exc
     except ImageError:
         raise
     except Exception as exc:  # Pillow raises a zoo of errors on bad input.
