@@ -25,7 +25,6 @@ Never commit provider credentials or private user photos.
 
 | Component | Repository |
 |---|---|
-| Complete source | https://github.com/nik129linux/cantrack |
 | Frontend | https://github.com/nik129linux/cantrack-frontend |
 | Backend | https://github.com/nik129linux/cantrack-backend |
 | Database | https://github.com/nik129linux/cantrack-db |
