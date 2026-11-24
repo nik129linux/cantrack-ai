@@ -1,13 +1,31 @@
 # CanTrack AI
 
-AI services for the CanTrack dog-walking platform.
+Installable Python package `cantrack_ai`, with CLIP image embeddings, image validation,
+cosine similarity and vision helpers. Runtime source is under `src/cantrack_ai`.
+The backend consumes this repository as a locked Git dependency.
+The current Gemini/Groq provider chain and walk photo-condition orchestration live in
+`cantrack-backend/apps/api-py/src/cantrack_api/ai_chain.py` and `walk_photo_ai.py`.
 
-This repository was split out of the CanTrack monorepo, keeping only
-`apps/api-py/src/cantrack_api/ai` and `tests/py/ai`.
+## Installation and tests
 
-## Related repositories
+Use Python 3.12 or newer:
 
-- [cantrack-backend](https://github.com/nik129linux/cantrack-backend) — FastAPI backend and API tests
-- [cantrack-frontend](https://github.com/nik129linux/cantrack-frontend) — web application and UI tests
-- [cantrack-db](https://github.com/nik129linux/cantrack-db) — database schema
-- [cantrack](https://github.com/nik129linux/cantrack) — monorepo with the full project
+```sh
+python -m pip install -e . pytest onnxruntime
+python -m pytest tests/py/ai -q
+```
+
+CLIP inference needs ONNX Runtime and model weights. The API Dockerfile downloads the
+model at build time; installing this package alone does not pre-download it.
+Tests substitute model/provider dependencies and are not a measurement of real model accuracy.
+See `evals/clip_eval.py` for the separate evaluation tool.
+Never commit provider credentials or private user photos.
+
+## Project repositories
+
+| Component | Repository |
+|---|---|
+| Frontend | https://github.com/nik129linux/cantrack-frontend |
+| Backend | https://github.com/nik129linux/cantrack-backend |
+| Database | https://github.com/nik129linux/cantrack-db |
+| AI package | https://github.com/nik129linux/cantrack-ai |
